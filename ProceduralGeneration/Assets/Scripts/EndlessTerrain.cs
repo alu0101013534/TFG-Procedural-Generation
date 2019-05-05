@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class EndlessTerrain : MonoBehaviour
 {
+
+    const float scale = 1f;
     const float viewerMoveLimitToUpdateChunk=25f;
     const float sqrViewerMoveLimitToUpdateChunk = viewerMoveLimitToUpdateChunk * viewerMoveLimitToUpdateChunk; //avoid using square operation
 
@@ -40,7 +42,7 @@ public class EndlessTerrain : MonoBehaviour
 
     private void Update()
     {
-        viewerPosition = new Vector2(viewer.position.x, viewer.position.z);
+        viewerPosition = new Vector2(viewer.position.x, viewer.position.z)/scale;
 
 
         //not updating the chunks every loop
@@ -122,7 +124,8 @@ public class EndlessTerrain : MonoBehaviour
 
 
             //meshObject = GameObject.CreatePrimitive(PrimitiveType.Plane);
-            meshObject.transform.position = position3;
+            meshObject.transform.position = position3 * scale;
+            meshObject.transform.localScale = Vector3.one*scale;
             meshObject.transform.parent = parent;
             //meshObject.transform.localScale = Vector3.one * 2.3f;
 
