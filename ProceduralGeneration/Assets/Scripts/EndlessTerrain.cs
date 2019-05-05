@@ -21,7 +21,7 @@ public class EndlessTerrain : MonoBehaviour
 
     Dictionary<Vector2, TerrainChunk> terrainChunkDictionary = new Dictionary<Vector2, TerrainChunk>();
 
-    List<TerrainChunk> lastUpdateChunks = new List<TerrainChunk>();
+    static List<TerrainChunk> lastUpdateChunks = new List<TerrainChunk>();
 
     void Start()
     {
@@ -75,11 +75,7 @@ public class EndlessTerrain : MonoBehaviour
                     //
                     terrainChunkDictionary[viewedChunkPos].UpdateTerrainChunk();
 
-                    if (terrainChunkDictionary[viewedChunkPos].IsVisible())
-                    {
-                        lastUpdateChunks.Add(terrainChunkDictionary[viewedChunkPos]);
-                    }
-
+               
                 }
                 else
                 {
@@ -205,6 +201,8 @@ public class EndlessTerrain : MonoBehaviour
 
                         }
                     }
+
+                    lastUpdateChunks.Add(this);
                 }
 
 
