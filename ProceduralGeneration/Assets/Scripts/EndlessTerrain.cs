@@ -25,6 +25,12 @@ public class EndlessTerrain : MonoBehaviour
 
     static List<TerrainChunk> lastUpdateChunks = new List<TerrainChunk>();
 
+    public GameObject treePrefabGO;
+    [SerializeField]
+    public static GameObject treePrefab;
+
+    private static float meshHeightMultiplier;
+
     void Start()
     {
 
@@ -36,8 +42,10 @@ public class EndlessTerrain : MonoBehaviour
 
 
         Debug.LogWarning(maxViewerDistance);
-
+        treePrefab = treePrefabGO;
         UpdateVisibleChunks();
+
+        meshHeightMultiplier = mapGenerator.meshHeightMultiplier;
     }
 
     private void Update()
@@ -108,6 +116,8 @@ public class EndlessTerrain : MonoBehaviour
 
         int previousLODIndex = -1;
 
+        bool hasTrees;
+
         public TerrainChunk(Vector2 coord, int size,LevelOfDetailInfo[] detailLevels, Transform parent, Material material)
         {
 
@@ -173,6 +183,8 @@ public class EndlessTerrain : MonoBehaviour
                 float viewerDistance = Mathf.Sqrt(bounds.SqrDistance(viewerPosition));
                 bool visible = viewerDistance <= maxViewerDistance;
 
+                bool treeVisible= viewerDistance <= 300;
+
 
                 if (visible)
                 {
@@ -210,6 +222,11 @@ public class EndlessTerrain : MonoBehaviour
 
 
                 SetVisible(visible);
+
+                if(treeVisible && !hasTrees)
+                {
+                    GenerateTrees();
+                }
             }
         }
 
@@ -223,6 +240,34 @@ public class EndlessTerrain : MonoBehaviour
 
             return meshObject.activeSelf;
         }
+
+        public void GenerateTrees()
+        {
+
+            Mesh mesh = this.meshFilter.mesh;
+            Vector3[] vertices = mesh.vertices;
+            float height;
+            for (int i=0;i < vertices.Length;i++) {
+
+
+                height = vertices[i].y / meshHeightMultiplier;
+                if (height < 0.57f && height > 0.49f)
+                
+                {
+                    Vector3 treePos = new Vector3(vertices[i].x + meshObject.transform.position.x, vertices[i].y, vertices[i].z + meshObject.transform.position.z);
+                    GameObject t = Instantiate(treePrefab, treePos, Quaternion.identity);
+
+                    t.transform.parent = meshObject.transform;
+
+
+                       }
+
+
+
+            }
+
+        }
+
     }
 
 
@@ -268,5 +313,39 @@ public class EndlessTerrain : MonoBehaviour
         public int lod;
         public float VisibleDistance;// when the viewer is outside of that range change the level of detail
     }
+
+    // class to represent a coordinate in the Tile Coordinate System
+    public class TileCoordinate
+    {
+        public int tileXIndex;
+        public int tileZIndex;
+        public int coordinateXIndex;
+        public int coordinateZIndex;
+
+        public TileCoordinate(int tileXIndex, int tileZIndex, int coordinateXIndex, int coordinateZIndex)
+        {
+            this.tileXIndex = tileXIndex;
+            this.tileZIndex = tileZIndex;
+            this.coordinateXIndex = coordinateXIndex;
+            this.coordinateZIndex = coordinateZIndex;
+        }
+
+       
+
+        public static TileCoordinate ConvertToTileCoordinate(int xIndex, int zIndex, int tileDepthInVertices,int tileWidthInVertices)
+        {
+            // the tile index is calculated by dividing the index by the number of tiles in that axis
+            int tileXIndex = (int)Mathf.Floor((float)xIndex / (float)tileWidthInVertices);
+            int tileZIndex = (int)Mathf.Floor((float)zIndex / (float)tileDepthInVertices);
+            // the coordinate index is calculated by getting the remainder of the division above
+            // we also need to translate the origin to the bottom left corner
+            int coordinateXIndex = tileWidthInVertices - (xIndex % tileDepthInVertices) - 1;
+            int coordinateZIndex = tileDepthInVertices - (zIndex % tileDepthInVertices) - 1;
+
+            TileCoordinate tileCoordinate = new TileCoordinate(tileXIndex, tileZIndex, coordinateXIndex, coordinateZIndex);
+            return tileCoordinate;
+        }
+    }
+
 
 }
