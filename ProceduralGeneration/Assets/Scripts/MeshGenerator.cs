@@ -23,6 +23,7 @@ public class MeshGenerator
             for (int x = 0; x < width; x+= meshSimplificationIncrement)
             {
                 meshData.vertices[vertexIndex] = new Vector3(topLefX + x, heightCurve.Evaluate(heightMap[x, y])* heightMultiplier, topLefZ-y);
+                meshData.noiseHeight[vertexIndex] = heightMap[x, y];
                 meshData.uvs[vertexIndex] = new Vector2(x / (float)width, y / (float)height);
                 if(x<width -1 && y < height - 1)
                 {
@@ -33,7 +34,7 @@ public class MeshGenerator
                 }
 
 
-
+                
                 vertexIndex++;
             }
 
@@ -51,9 +52,12 @@ public class MeshData {
     public Vector2[] uvs;
     int triangleIndex;
 
+    public float[] noiseHeight;
+
     public MeshData (int meshWidth,int meshHeight)
     {
         vertices = new Vector3[meshWidth * meshHeight];
+        noiseHeight = new float[meshWidth * meshHeight];
         uvs = new Vector2[meshWidth * meshHeight];
         triangles = new int[(meshWidth-1) * (meshHeight-1)*6];
     }
