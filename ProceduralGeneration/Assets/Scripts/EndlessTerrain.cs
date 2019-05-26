@@ -105,6 +105,7 @@ public class EndlessTerrain : MonoBehaviour
 
         MeshRenderer meshRenderer;
         MeshFilter meshFilter;
+        MeshCollider meshCollider;
 
         LevelOfDetailInfo[] detailLevels;
 
@@ -134,7 +135,7 @@ public class EndlessTerrain : MonoBehaviour
             meshRenderer = meshObject.AddComponent<MeshRenderer>();
             meshFilter = meshObject.AddComponent<MeshFilter>();
             meshRenderer.material = material;
-
+            meshCollider = meshObject.AddComponent<MeshCollider>();
 
             //meshObject = GameObject.CreatePrimitive(PrimitiveType.Plane);
             meshObject.transform.position = position3 * scale;
@@ -187,7 +188,7 @@ public class EndlessTerrain : MonoBehaviour
                 float viewerDistance = Mathf.Sqrt(bounds.SqrDistance(viewerPosition));
                 bool visible = viewerDistance <= maxViewerDistance;
 
-                bool treeVisible = viewerDistance <= 300;
+                bool treeVisible = viewerDistance <= 100;
 
 
                 if (visible)
@@ -214,6 +215,7 @@ public class EndlessTerrain : MonoBehaviour
                         {
                             previousLODIndex = lodIndex;
                             meshFilter.mesh = lodMesh.mesh;
+                            meshCollider.sharedMesh = lodMesh.mesh;
                         }
                         else if (!lodMesh.hasRequestedMesh)
                         {
