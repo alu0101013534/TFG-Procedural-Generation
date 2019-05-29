@@ -6,23 +6,32 @@ public class TreePool : MonoBehaviour
 {
 
     public static int numItems = 1000;
-    public GameObject prefab;
-    public GameObject Pineprefab;
+    public List<GameObject> prefab;
+    public List<GameObject> Pineprefab;
     static GameObject[] trees;
     static GameObject[] pines;
 
     // Start is called before the first frame update
     void Start()
     {
-        trees = new GameObject[numItems];
-        pines = new GameObject[numItems];
-        for (int i=0; i< numItems; i++) {
-            trees[i] = Instantiate(prefab, Vector3.zero, Quaternion.identity);
+       // trees = new GameObject[numItems];
+        //pines = new GameObject[numItems];
+       /* for (int i=0; i< numItems; i++) {
+            if (Random.Range(0, 10) > 4)
+            {
+                trees[i] = Instantiate(prefab[Random.Range(0, prefab.Count)], Vector3.zero, Quaternion.identity);
+                pines[i] = Instantiate(Pineprefab[Random.Range(0, Pineprefab.Count)], Vector3.zero, Quaternion.identity);
+            }
+            else
+            {
+                trees[i] = Instantiate(prefab[0], Vector3.zero, Quaternion.identity);
+                pines[i] = Instantiate(Pineprefab[0], Vector3.zero, Quaternion.identity);
+            }
+
             trees[i].SetActive(false);
-            pines[i] = Instantiate(Pineprefab, Vector3.zero, Quaternion.identity);
             pines[i].SetActive(false);
 
-        }
+        }*/
         
     }
 
@@ -32,30 +41,45 @@ public class TreePool : MonoBehaviour
         
     }
 
-     public static GameObject getTree() {
+     public GameObject getTree() {
 
-        for (int i = 0; i < numItems; i++)
+        /* for (int i = 0; i < numItems; i++)
+         {
+            if(!trees[i].activeSelf)
+             { 
+                 return trees[i];
+             }
+
+         }
+         return null;*/
+        GameObject tree;
+        if (Random.Range(0, 10) > 4)
         {
-           if(!trees[i].activeSelf)
-            { 
-                return trees[i];
-            }
-
+            tree= Instantiate(prefab[Random.Range(0, prefab.Count)], Vector3.zero, Quaternion.identity);
+           
         }
-        return null;
+        else
+        {
+            tree = Instantiate(prefab[0], Vector3.zero, Quaternion.identity);
+             
+        }
+        return tree;
     }
 
-    public static GameObject getPine()
+    public  GameObject getPine()
     {
 
-        for (int i = 0; i < numItems; i++)
+        GameObject tree;
+        if (Random.Range(0, 10) > 4)
         {
-            if (!pines[i].activeSelf)
-            {
-                return pines[i];
-            }
+            tree = Instantiate(Pineprefab[Random.Range(0, Pineprefab.Count)], Vector3.zero, Quaternion.identity);
 
         }
-        return null;
+        else
+        {
+            tree = Instantiate(Pineprefab[0], Vector3.zero, Quaternion.identity);
+
+        }
+        return tree;
     }
 }

@@ -30,13 +30,14 @@ public class EndlessTerrain : MonoBehaviour
     public static GameObject treePrefab;
 
     private static float meshHeightMultiplier;
-
+    static TreePool treepoolGO;
     void Start()
     {
 
         maxViewerDistance = detailLevels[detailLevels.Length - 1].VisibleDistance;
 
         mapGenerator = FindObjectOfType<MapGenerator>();
+        treepoolGO=FindObjectOfType<TreePool>();
         chunkSize = MapGenerator.mapChunkSize - 1;
         chunksVisibleInView = Mathf.RoundToInt(maxViewerDistance / chunkSize);
 
@@ -46,6 +47,8 @@ public class EndlessTerrain : MonoBehaviour
         UpdateVisibleChunks();
 
         meshHeightMultiplier = mapGenerator.meshHeightMultiplier;
+
+        Debug.Log("perlin "+Mathf.PerlinNoise(233, 222));
     }
 
     private void Update()
@@ -118,7 +121,8 @@ public class EndlessTerrain : MonoBehaviour
         int previousLODIndex = -1;
 
         bool hasTrees;
-
+        bool TreesReceived;
+        float innerSeed;
         List<GameObject> myAssets = new List<GameObject>();
 
 
@@ -144,7 +148,7 @@ public class EndlessTerrain : MonoBehaviour
             //meshObject.transform.localScale = Vector3.one * 2.3f;
 
             SetVisible(false);
-
+            innerSeed = float.Parse((position.x + position.y).ToString("0.00"));
 
             levelOfDetailMeshes = new LevelOfDetailMesh[detailLevels.Length];
 
@@ -152,7 +156,7 @@ public class EndlessTerrain : MonoBehaviour
             {
                 levelOfDetailMeshes[i] = new LevelOfDetailMesh(detailLevels[i].lod, UpdateTerrainChunk);
             }
-
+            hasTrees = false;
             mapGenerator.RequestMapData(position, OnMapDataRecieved);
         }
         void OnMapDataRecieved(MapData mapData)
@@ -216,6 +220,10 @@ public class EndlessTerrain : MonoBehaviour
                             previousLODIndex = lodIndex;
                             meshFilter.mesh = lodMesh.mesh;
                             meshCollider.sharedMesh = lodMesh.mesh;
+                            if (!hasTrees)
+                            {
+                                GenerateTrees();
+                            }
                         }
                         else if (!lodMesh.hasRequestedMesh)
                         {
@@ -223,19 +231,29 @@ public class EndlessTerrain : MonoBehaviour
 
                         }
 
-                        if (lodMesh.hasMesh && treeVisible && !hasTrees)
-                        {
-                            GenerateTrees();
-                        }
+                      
                     }
 
                     lastUpdateChunks.Add(this);
                 }
 
-                if (!visible)
+                if (!treeVisible)
                 {
                     RemoveTrees();
 
+                }
+                else
+                {
+                   
+
+                    if (TreesReceived)
+                    {
+                        ShowTrees();
+
+                    }
+                   /* else if (!hasTrees ) { 
+                            GenerateTrees();
+                      }*/
                 }
                 SetVisible(visible);
 
@@ -258,73 +276,83 @@ public class EndlessTerrain : MonoBehaviour
 
         public void GenerateTrees()
         {
-            
-            Mesh mesh = this.meshFilter.mesh;
-            Vector3[] vertices = mesh.vertices;
-            float height;
-            float rand;
-            for (int i = 0; i < vertices.Length; i++)
-            {
-
-
-                height = levelOfDetailMeshes[0].noiseHeight[i];
-                rand = Mathf.PerlinNoise(vertices[i].x + MapGenerator.mapChunkSize / 10, vertices[i].y + MapGenerator.mapChunkSize  / 10);
-                rand = Random.Range(0, 100);
-                if (height < 0.57f && height > 0.50f && rand < 1f)
+            if (levelOfDetailMeshes[0] != null && levelOfDetailMeshes[0].noiseHeight != null)
+            { 
+                Mesh mesh = this.meshFilter.mesh;
+                Vector3[] vertices = mesh.vertices;
+                float height;
+                float rand;
+                for (int i = 0; i < vertices.Length; i++)
                 {
-                    GameObject newAsset = TreePool.getTree();
 
-                    if (newAsset != null)
+
+                    height = levelOfDetailMeshes[0].noiseHeight[i];
+                    rand = Mathf.PerlinNoise(vertices[i].x , vertices[i].z )*100;
+                   // Random.seed = (int)position.x;
+                    rand = Random.Range(0, 100);
+                    if (height < 0.57f && height > 0.50f && rand < 1f)
                     {
-                        Vector3 treePos = new Vector3(vertices[i].x + meshObject.transform.position.x, vertices[i].y, vertices[i].z + meshObject.transform.position.z);
-                        //GameObject t = Instantiate(treePrefab, treePos, Quaternion.identity);
+                        GameObject newAsset = treepoolGO.getTree();
 
-                        //t.transform.parent = meshObject.transform;
+                        if (newAsset != null)
+                        {
+                            Vector3 treePos = new Vector3(vertices[i].x + meshObject.transform.position.x, vertices[i].y, vertices[i].z + meshObject.transform.position.z);
+                            //GameObject t = Instantiate(treePrefab, treePos, Quaternion.identity);
+
+                            //t.transform.parent = meshObject.transform;
 
 
-                        newAsset.transform.position = treePos;
-                        newAsset.transform.parent = meshObject.transform;
-                        newAsset.SetActive(true);
-                        myAssets.Add(newAsset);
+                            newAsset.transform.position = treePos;
+                            newAsset.transform.parent = meshObject.transform;
+
+                            Vector3 euler = newAsset.transform.eulerAngles;
+                            euler.y = Random.Range(0f, 360f);
+                            newAsset.transform.eulerAngles = euler;
+
+
+                            newAsset.SetActive(true);
+                            myAssets.Add(newAsset);
+
+                        }
+
+
+
+                    }
+                
+                    if (height > 0.57f && height < 0.64f && rand < 1f)
+                    {
+                        GameObject newAsset = treepoolGO.getPine();
+
+                        if (newAsset != null)
+                        {
+                            Vector3 treePos = new Vector3(vertices[i].x + meshObject.transform.position.x, vertices[i].y, vertices[i].z + meshObject.transform.position.z);
+                            //GameObject t = Instantiate(treePrefab, treePos, Quaternion.identity);
+
+                            //t.transform.parent = meshObject.transform;
+
+
+                            newAsset.transform.position = treePos;
+                            newAsset.transform.parent = meshObject.transform;
+                            newAsset.SetActive(true);
+                            myAssets.Add(newAsset);
+
+                        }
+
+
 
                     }
 
 
 
                 }
-
-                if (height > 0.57f && height < 0.64f && rand < 1f)
-                {
-                    GameObject newAsset = TreePool.getPine();
-
-                    if (newAsset != null)
-                    {
-                        Vector3 treePos = new Vector3(vertices[i].x + meshObject.transform.position.x, vertices[i].y, vertices[i].z + meshObject.transform.position.z);
-                        //GameObject t = Instantiate(treePrefab, treePos, Quaternion.identity);
-
-                        //t.transform.parent = meshObject.transform;
-
-
-                        newAsset.transform.position = treePos;
-                        newAsset.transform.parent = meshObject.transform;
-                        newAsset.SetActive(true);
-                        myAssets.Add(newAsset);
-
-                    }
-
-
-
-                }
-
-
-
+                TreesReceived = true;
+                hasTrees = true;
             }
-            hasTrees = true;
-
         }
 
         public void RemoveTrees()
         {
+            hasTrees = false;
 
             for (int i = 0; i < myAssets.Count; i++)
             {
@@ -332,8 +360,20 @@ public class EndlessTerrain : MonoBehaviour
                     myAssets[i].SetActive(false);
 
             }
-            myAssets.Clear();
         }
+        public void ShowTrees()
+        {
+            hasTrees = false;
+
+            for (int i = 0; i < myAssets.Count; i++)
+            {
+                if (myAssets[i] != null)
+                    myAssets[i].SetActive(true);
+
+            }
+        }
+
+
     }
 
     //fetch mesh from mesh generator
