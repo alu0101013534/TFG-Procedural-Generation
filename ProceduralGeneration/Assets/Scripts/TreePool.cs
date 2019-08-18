@@ -8,6 +8,10 @@ public class TreePool : MonoBehaviour
     public static int numItems = 1000;
     public List<GameObject> prefab;
     public List<GameObject> Pineprefab;
+    public List<GameObject> BeachEnemies;
+    public List<GameObject> WaterEnemies;
+    public List<GameObject> ForestEnemies;
+    public List<GameObject> MountainEnemies;
     static GameObject[] trees;
     static GameObject[] pines;
 
@@ -82,4 +86,73 @@ public class TreePool : MonoBehaviour
         }
         return tree;
     }
+
+    public GameObject getBeachEnemies()
+    {
+
+        GameObject enemy;
+        if (Random.Range(0, 10) > 4)
+        {
+            enemy = Instantiate(BeachEnemies[Random.Range(0, BeachEnemies.Count)], Vector3.zero, Quaternion.identity);
+
+        }
+        else
+        {
+            enemy = Instantiate(BeachEnemies[0], Vector3.zero, Quaternion.identity);
+
+        }
+        return enemy;
+    }
+    public GameObject getWaterEnemies()
+    {
+
+        GameObject enemy;
+        if (Random.Range(0, 10) > 4)
+        {
+            enemy = Instantiate(WaterEnemies[Random.Range(0, WaterEnemies.Count)], Vector3.zero, Quaternion.identity);
+
+        }
+        else
+        {
+            enemy = Instantiate(WaterEnemies[0], Vector3.zero, Quaternion.identity);
+
+        }
+        return enemy;
+    }
+
+    public GameObject getForestEnemies()
+    {
+
+        GameObject enemy;
+        if (Random.Range(0, 10) > 4)
+        {
+            enemy = Instantiate(ForestEnemies[Random.Range(0, ForestEnemies.Count)], Vector3.zero, Quaternion.identity);
+
+        }
+        else
+        {
+            enemy = Instantiate(ForestEnemies[0], Vector3.zero, Quaternion.identity);
+
+        }
+        return enemy;
+    }
+
+    public GameObject getMountainEnemies()
+    {
+
+        GameObject enemy;
+        if (Random.Range(0, 10) > 4)
+        {
+            enemy = Instantiate(MountainEnemies[Random.Range(0, MountainEnemies.Count)], Vector3.zero, Quaternion.identity);
+
+        }
+        else
+        {
+            enemy = Instantiate(MountainEnemies[0], Vector3.zero, Quaternion.identity);
+
+        }
+        return enemy;
+    }
+
 }
+

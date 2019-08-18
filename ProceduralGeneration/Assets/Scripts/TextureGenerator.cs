@@ -20,14 +20,16 @@ public class TextureGenerator
         int width = heightMap.GetLength(0);
         int height = heightMap.GetLength(1);
 
-        //crear la textura 2d
-
+      
+        //instead of creating a  texture and changing it pixel by pixel we can use a Color Array
         Color[] colourMap = new Color[width * height];
 
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
+
+                //Since the heightMap has 2 dimensions and colourmap 1, in order to iterate it will use  y * width + x as iterator and interpolate the float value from heightmap between black and white
                 colourMap[y * width + x] = Color.Lerp(Color.black, Color.white, heightMap[x, y]);
             }
 
