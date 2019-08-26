@@ -6,11 +6,11 @@ using System.Threading;
 
 public class MapGenerator : MonoBehaviour {
 
-    public enum DrawMode {NoiseMap,ColourMap,Mesh}
-    public DrawMode drawMode;
+    public enum DrawMode {NoiseMap,ColourMap,Mesh}      //What is going to generate in editor mode
+    public DrawMode drawMode;       
 
     public Noise.NormalizeMode normalizeMode;
-    public const int mapChunkSize = 241;
+    public const int mapChunkSize = 241;        
 
     [Range(0, 6)]
     public int levelOfDetailEditor;
@@ -69,6 +69,7 @@ public class MapGenerator : MonoBehaviour {
        
     }
 
+    // Used to Generate the map in editor mode 
     public void DrawMap()
     {
         MapData mapData = GenerateMapData(Vector2.zero);
@@ -188,6 +189,8 @@ public class MapGenerator : MonoBehaviour {
     }
 
 }
+
+//Structure to organize different tipes of terrains. 
 [System.Serializable]
 public struct TerrainType {
     public string name;
@@ -196,8 +199,8 @@ public struct TerrainType {
 
 }
 
-
-public struct MapData {
+//Struct to store the heightMap and colour map
+public struct MapData {      
     public readonly float[,] heightMap;
     public readonly Color [] colourMap;
 
