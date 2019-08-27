@@ -10,8 +10,8 @@ public class MeshGenerator
         int width = heightMap.GetLength(0);
         int height= heightMap.GetLength(1);
 
-        float topLefX = (width - 1) / -2f;
-        float topLefZ = (width - 1) / 2f;
+        float topLeftX = (width - 1) / -2f;
+        float topLeftZ = (width - 1) / 2f;
 
         int meshSimplificationIncrement = (levelOfDetail == 0) ? 1: levelOfDetail * 2;
         int verticesPerLine = ((width-1) /meshSimplificationIncrement) + 1;
@@ -22,7 +22,7 @@ public class MeshGenerator
         {
             for (int x = 0; x < width; x+= meshSimplificationIncrement)
             {
-                meshData.vertices[vertexIndex] = new Vector3(topLefX + x, heightCurve.Evaluate(heightMap[x, y])* heightMultiplier, topLefZ-y);
+                meshData.vertices[vertexIndex] = new Vector3(topLeftX + x, heightCurve.Evaluate(heightMap[x, y])* heightMultiplier, topLeftZ - y);
                 meshData.noiseHeight[vertexIndex] = heightMap[x, y];
                 meshData.uvs[vertexIndex] = new Vector2(x / (float)width, y / (float)height);
                 if(x<width -1 && y < height - 1)

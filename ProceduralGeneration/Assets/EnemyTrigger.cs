@@ -7,7 +7,7 @@ public class EnemyTrigger : MonoBehaviour
     void OnCollisionEnter(Collision collision)
     {
 
-        if (collision.gameObject.tag.Equals("Plasyer"))
+        if (collision.gameObject.tag.Equals("Player"))
             Debug.Log("PEGFA");
         foreach (ContactPoint contact in collision.contacts)
         {
