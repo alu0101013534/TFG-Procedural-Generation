@@ -122,8 +122,11 @@ public class ChunkGenerator : MonoBehaviour
 
         bool hasTrees;
         bool TreesReceived;
+        bool hasEnemies;
+        bool EnemiesReceived;
         float innerSeed;
         List<GameObject> myAssets = new List<GameObject>();
+        List<GameObject> myEnemies = new List<GameObject>();
 
 
         public TerrainChunk(Vector2 coord, int size, LevelOfDetailInfo[] detailLevels, Transform parent, Material material)
@@ -224,6 +227,10 @@ public class ChunkGenerator : MonoBehaviour
                             {
                                 GenerateTrees();
                             }
+                            if (!hasEnemies)
+                            {
+                                GenerateEnemies();
+                            }
                         }
                         else if (!lodMesh.hasRequestedMesh)
                         {
@@ -251,9 +258,10 @@ public class ChunkGenerator : MonoBehaviour
                         ShowTrees();
 
                     }
-                   /* else if (!hasTrees ) { 
-                            GenerateTrees();
-                      }*/
+                    if (EnemiesReceived) {
+                        ShowEnemies();
+                    }
+             
                 }
                 SetVisible(visible);
 
@@ -350,6 +358,80 @@ public class ChunkGenerator : MonoBehaviour
             }
         }
 
+
+
+        public void GenerateEnemies()
+        {
+            if (levelOfDetailMeshes[0] != null && levelOfDetailMeshes[0].noiseHeight != null)
+            {
+                Mesh mesh = this.meshFilter.mesh;
+                Vector3[] vertices = mesh.vertices;
+                float height;
+                float randi;
+                int enemysize=20;
+                for (int i = 0; i < enemysize; i++)
+                {
+
+
+                    height = levelOfDetailMeshes[0].noiseHeight[i];
+
+                    randi = Random.Range(0, vertices.Length);
+                    int posi = (int)randi;
+                    // Random.seed = (int)position.x;
+                   
+                    if (height > 0.57f && height < 0.64f )
+                    {
+                        GameObject newAsset = prefabManagerGO.getForestEnemies();
+
+                        if (newAsset != null)
+                        {
+                            Vector3 treePos = new Vector3(vertices[posi].x + meshObject.transform.position.x, vertices[posi].y, vertices[posi].z + meshObject.transform.position.z);
+                            //GameObject t = Instantiate(treePrefab, treePos, Quaternion.identity);
+
+                            //t.transform.parent = meshObject.transform;
+
+
+                            newAsset.transform.position = treePos;
+                            newAsset.SetActive(true);
+                            myEnemies.Add(newAsset);
+
+                        }
+
+
+
+                    }
+
+                    if (height > 0.30f && height < 0.50f)
+                    {
+                        GameObject newAsset = prefabManagerGO.getBeachEnemies();
+
+                        if (newAsset != null)
+                        {
+                            Vector3 treePos = new Vector3(vertices[posi].x + meshObject.transform.position.x, vertices[posi].y, vertices[posi].z + meshObject.transform.position.z);
+                            //GameObject t = Instantiate(treePrefab, treePos, Quaternion.identity);
+
+                            //t.transform.parent = meshObject.transform;
+
+
+                            newAsset.transform.position = treePos;
+                            newAsset.SetActive(true);
+                            myEnemies.Add(newAsset);
+
+                        }
+
+
+
+                    }
+
+
+
+                }
+                EnemiesReceived = true;
+                hasEnemies = true;
+            }
+        }
+
+
         public void RemoveTrees()
         {
             hasTrees = false;
@@ -369,6 +451,17 @@ public class ChunkGenerator : MonoBehaviour
             {
                 if (myAssets[i] != null)
                     myAssets[i].SetActive(true);
+
+            }
+        }
+        public void ShowEnemies()
+        {
+            hasTrees = false;
+
+            for (int i = 0; i < myEnemies.Count; i++)
+            {
+                if (myEnemies[i] != null)
+                    myEnemies[i].SetActive(true);
 
             }
         }

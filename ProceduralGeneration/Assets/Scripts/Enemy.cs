@@ -8,12 +8,14 @@ public class Enemy : MonoBehaviour
     private GameObject player;
     Rigidbody rb;
 
+    private GameManager gm;
 
 
     // Start is called before the first frame update
     void Start()
     {
         player=GameObject.FindGameObjectWithTag("Player");
+        gm = GameObject.FindObjectOfType<GameManager>();
     }
 
     // Update is called once per frame
@@ -26,5 +28,11 @@ public class Enemy : MonoBehaviour
 
 
 
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Player")
+            gm.DamagePlayer();
     }
 }

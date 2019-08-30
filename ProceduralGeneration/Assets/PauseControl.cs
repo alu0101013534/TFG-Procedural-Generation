@@ -6,18 +6,23 @@ public class PauseControl : MonoBehaviour
 {
 
     public GameObject canvas;
+
+    private GameManager gm;
     // Start is called before the first frame update
     void Start()
     {
-        
+        gm = GameObject.FindObjectOfType<GameManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.Escape))
+        if (!gm.isGameOver)
         {
-            Pause();
+            if (Input.GetKey(KeyCode.Escape))
+            {
+                Pause();
+            }
         }
     }
 
