@@ -28,6 +28,7 @@ public class Generator : MonoBehaviour {
     public float meshHeightMultiplier;
     public AnimationCurve meshHeightCurve;
 
+    public bool randomize;
     public bool autoUpdate;
 
 
@@ -35,6 +36,9 @@ public class Generator : MonoBehaviour {
 
     Queue<MapThreadInfo<MapData>> mapDataThreadInfoQueue= new Queue<MapThreadInfo<MapData>>();
     Queue<MapThreadInfo<MeshData>> meshDataThreadInfoQueue = new Queue<MapThreadInfo<MeshData>>();
+
+
+
 
     MapData GenerateMapData(Vector2 center) {
         float[,] noiseMap = NoiseGenerator.GenerateNoiseMap(mapChunkSize, mapChunkSize, seed,noiseScale, octaves, persinstance,lacunarity, center+offset , normalizeMode);
@@ -150,6 +154,9 @@ public class Generator : MonoBehaviour {
 
     public void Start()
     {
+
+        if (randomize)
+            seed = (int)UnityEngine.Random.Range(1, 10000);
         DrawMap();
     }
 
