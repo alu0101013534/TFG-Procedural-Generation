@@ -19,7 +19,7 @@ public class Timer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float t =  startTime - Time.time;
+        float t =  startTime - Time.timeSinceLevelLoad;
         string min = ((int)t / 60).ToString();
         string sec = (t % 60).ToString("f2");
         timerText.text="SURVIVE: "+min+":" + sec;
