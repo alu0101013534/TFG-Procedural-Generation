@@ -8,10 +8,11 @@ public class ChunkGenerator : MonoBehaviour
     const float scale = 1f;
     const float viewerMoveLimitToUpdateChunk=25f;
     const float sqrViewerMoveLimitToUpdateChunk = viewerMoveLimitToUpdateChunk * viewerMoveLimitToUpdateChunk; //avoid using square operation
-
+    static bool exploration;
     public LevelOfDetailInfo[] detailLevels;
     public static float maxViewerDistance;
     public Transform viewer;
+    public bool explorationEditor;
     public Material mapMaterial;
 
     static Generator mapGenerator;
@@ -41,7 +42,7 @@ public class ChunkGenerator : MonoBehaviour
         chunkSize = Generator.mapChunkSize - 1;
         chunksVisibleInView = Mathf.RoundToInt(maxViewerDistance / chunkSize);
 
-
+        exploration = explorationEditor;
         Debug.LogWarning(maxViewerDistance);
         treePrefab = treePrefabGO;
         UpdateVisibleChunks();
@@ -75,13 +76,13 @@ public class ChunkGenerator : MonoBehaviour
         lastUpdateChunks.Clear();
 
         int currentChunkX = Mathf.RoundToInt(viewerPosition.x / chunkSize);
-        int currentChunkY = Mathf.RoundToInt(viewerPosition.y / chunkSize);
+        int currentChunkZ = Mathf.RoundToInt(viewerPosition.y / chunkSize);
 
         for (int yOffset = -chunksVisibleInView; yOffset <= chunksVisibleInView; yOffset++)
         {
             for (int xOffset = -chunksVisibleInView; xOffset <= chunksVisibleInView; xOffset++)
             {
-                Vector2 viewedChunkPos = new Vector2(currentChunkX + xOffset, currentChunkY + yOffset);
+                Vector2 viewedChunkPos = new Vector2(currentChunkX + xOffset, currentChunkZ + yOffset);
 
                 if (terrainChunkDictionary.ContainsKey(viewedChunkPos))
                 {
@@ -227,9 +228,11 @@ public class ChunkGenerator : MonoBehaviour
                             {
                                 GenerateTrees();
                             }
+                            if (!ChunkGenerator.exploration) {
                             if (!hasEnemies)
                             {
                                 GenerateEnemies();
+                                }
                             }
                         }
                         else if (!lodMesh.hasRequestedMesh)
@@ -273,7 +276,8 @@ public class ChunkGenerator : MonoBehaviour
 
         public void SetVisible(bool visible)
         {
-            meshObject.SetActive(visible);
+            if (meshObject != null)
+                meshObject.SetActive(visible);
         }
 
         public bool IsVisible()
@@ -373,24 +377,18 @@ public class ChunkGenerator : MonoBehaviour
                 {
 
 
-                    height = levelOfDetailMeshes[0].noiseHeight[i];
 
                     randi = Random.Range(0, vertices.Length);
                     int posi = (int)randi;
-                    // Random.seed = (int)position.x;
+                    height = levelOfDetailMeshes[0].noiseHeight[posi];
                    
-                    if (height > 0.57f && height < 0.64f )
+                    if (height > 0.50f && height < 0.60f)
                     {
                         GameObject newAsset = prefabManagerGO.getForestEnemies();
 
                         if (newAsset != null)
                         {
                             Vector3 treePos = new Vector3(vertices[posi].x + meshObject.transform.position.x, vertices[posi].y, vertices[posi].z + meshObject.transform.position.z);
-                            //GameObject t = Instantiate(treePrefab, treePos, Quaternion.identity);
-
-                            //t.transform.parent = meshObject.transform;
-
-
                             newAsset.transform.position = treePos;
                             newAsset.SetActive(true);
                             myEnemies.Add(newAsset);
@@ -401,18 +399,29 @@ public class ChunkGenerator : MonoBehaviour
 
                     }
 
-                    if (height > 0.30f && height < 0.50f)
+                    if (height > 0.64f && height < 0.70f)
+                    {
+                        GameObject newAsset = prefabManagerGO.getMountainEnemies();
+
+                        if (newAsset != null)
+                        {
+                            Vector3 treePos = new Vector3(vertices[posi].x + meshObject.transform.position.x, vertices[posi].y, vertices[posi].z + meshObject.transform.position.z);
+                            newAsset.transform.position = treePos;
+                            newAsset.SetActive(true);
+                            myEnemies.Add(newAsset);
+
+                        }
+
+
+
+                    }
+                    if (height > 0.45f && height < 0.50f)
                     {
                         GameObject newAsset = prefabManagerGO.getBeachEnemies();
 
                         if (newAsset != null)
                         {
                             Vector3 treePos = new Vector3(vertices[posi].x + meshObject.transform.position.x, vertices[posi].y, vertices[posi].z + meshObject.transform.position.z);
-                            //GameObject t = Instantiate(treePrefab, treePos, Quaternion.identity);
-
-                            //t.transform.parent = meshObject.transform;
-
-
                             newAsset.transform.position = treePos;
                             newAsset.SetActive(true);
                             myEnemies.Add(newAsset);
@@ -423,7 +432,22 @@ public class ChunkGenerator : MonoBehaviour
 
                     }
 
+                    if (height > 0.30f && height < 0.40f)
+                    {
+                        GameObject newAsset = prefabManagerGO.getWaterEnemies();
 
+                        if (newAsset != null)
+                        {
+                            Vector3 treePos = new Vector3(vertices[posi].x + meshObject.transform.position.x, vertices[posi].y, vertices[posi].z + meshObject.transform.position.z);
+                            newAsset.transform.position = treePos;
+                            newAsset.SetActive(true);
+                            myEnemies.Add(newAsset);
+
+                        }
+
+
+
+                    }
 
                 }
                 EnemiesReceived = true;

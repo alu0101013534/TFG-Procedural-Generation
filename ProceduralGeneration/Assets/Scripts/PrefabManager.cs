@@ -91,17 +91,21 @@ public class PrefabManager : MonoBehaviour
     {
 
         GameObject enemy;
-        if (Random.Range(0, 10) > 4)
+        if (BeachEnemies.Count != 0)
         {
-            enemy = Instantiate(BeachEnemies[Random.Range(0, BeachEnemies.Count)], Vector3.zero, Quaternion.identity);
+            if (Random.Range(0, 10) > 4)
+            {
+                enemy = Instantiate(BeachEnemies[Random.Range(0, BeachEnemies.Count)], Vector3.zero, Quaternion.identity);
 
-        }
-        else
-        {
-            enemy = Instantiate(BeachEnemies[0], Vector3.zero, Quaternion.identity);
+            }
+            else
+            {
+                enemy = Instantiate(BeachEnemies[0], Vector3.zero, Quaternion.identity);
 
+            }
+            return enemy;
         }
-        return enemy;
+        else return null;
     }
     public GameObject getWaterEnemies()
     {

@@ -22,11 +22,7 @@ public class Enemy : MonoBehaviour
     void Update()
     {
         transform.LookAt(player.transform);
-
-
         transform.position += transform.forward * speed * Time.deltaTime;
-
-
 
     }
 
